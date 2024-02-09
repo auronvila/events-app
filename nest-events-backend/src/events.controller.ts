@@ -4,9 +4,9 @@ import {
   Delete,
   Get,
   HttpCode, NotFoundException,
-  Param,
+  Param, ParseUUIDPipe,
   Patch,
-  Post,
+  Post, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -26,7 +26,7 @@ export class EventsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<EventEntity> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<EventEntity> {
     try {
       const event = await this.repository.findOne({ where: { id } });
       if (!event) {
@@ -38,14 +38,21 @@ export class EventsController {
     }
   }
 
+  // you can use pipes (validators) locally and create groups and based on the groups you can create validation cases
+  // you can see the create-event-dto.ts file to see what I mean.
+  // @UsePipes(new ValidationPipe({ groups: ['create'] }))
   @Post()
+  @HttpCode(201)
   async create(@Body() reqBody: CreateEventDto) {
-    return await this.repository.save({
+    await this.repository.save({
       ...reqBody,
       date: new Date(reqBody.date),
     });
   }
 
+  // you can use pipes (validators) locally and create groups and based on the groups you can create validation cases
+  // you can see the create-event-dto.ts file to see what I mean.
+  // @UsePipes(new ValidationPipe({ groups: ['update'] }))
   @Patch(':id')
   async update(@Param('id') id: string, @Body() input: UpdateEventDto) {
     const event = await this.repository.findOne({ where: { id } });
