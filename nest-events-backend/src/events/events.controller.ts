@@ -13,10 +13,10 @@ import { UpdateEventDto } from './update-event.dto';
 import { EventEntity } from './event.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as process from 'process';
 
 @Controller('/events')
 export class EventsController {
-
   constructor(@InjectRepository(EventEntity) private readonly repository: Repository<EventEntity>) {
   }
 
