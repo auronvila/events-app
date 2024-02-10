@@ -8,9 +8,9 @@ import {
   Patch,
   Post, UsePipes, ValidationPipe,
 } from '@nestjs/common';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
-import { EventEntity } from './entities/event.entity';
+import { CreateEventDto } from './create-event.dto';
+import { UpdateEventDto } from './update-event.dto';
+import { EventEntity } from './event.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
