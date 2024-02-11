@@ -7,29 +7,40 @@ import {
   Param, ParseUUIDPipe,
   Patch,
   Post,
+  Query, UsePipes, ValidationPipe,
 } from '@nestjs/common';
-import { CreateEventDto } from './create-event.dto';
-import { UpdateEventDto } from './update-event.dto';
+import { CreateEventDto } from './input/create-event.dto';
+import { UpdateEventDto } from './input/update-event.dto';
 import { EventEntity } from './event.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventsService } from './events.service';
+import { ListEvents } from './input/list-events';
 
 @Controller('/events')
 export class EventsController {
   private readonly logger = new Logger(EventsController.name);
 
-  constructor(@InjectRepository(EventEntity) private readonly repository: Repository<EventEntity>) {
+  constructor(
+    @InjectRepository(EventEntity) private readonly repository: Repository<EventEntity>,
+    private readonly eventsService: EventsService,
+  ) {
   }
 
   @Get('/get-all')
-  async findAll() {
-    return await this.repository.find();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async findAll(@Query() filter: ListEvents) {
+    return await this.eventsService.getEventsWithAttendeeCountFilteredPaginated(filter, {
+      total: true,
+      currentPage: filter.page,
+      limit: 5,
+    });
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<EventEntity> {
     try {
-      const event = await this.repository.findOne({ where: { id } });
+      const event = await this.eventsService.getEvent(id);
       if (!event) {
         throw new NotFoundException('Event not found');
       }
@@ -71,10 +82,10 @@ export class EventsController {
   @HttpCode(204)
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const event = await this.repository.findOne({ where: { id } });
-    if (!event) {
-      throw new NotFoundException('Event not found');
+    const result = await this.eventsService.deleteEvent(id);
+
+    if (result.affected !== 1) {
+      throw new NotFoundException();
     }
-    await this.repository.remove(event);
   }
 }

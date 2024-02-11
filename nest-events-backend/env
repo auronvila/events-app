@@ -3,3 +3,4 @@ DB_PORT:0000
 DB_USERNAME=example
 DB_PASSWORD=example
 DB_NAME=dbName
+NODE_ENV=local/production

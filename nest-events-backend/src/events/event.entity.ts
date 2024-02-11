@@ -1,11 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { AttendeesEntity } from './attendees.entity';
 
 @Entity('event')
 export class EventEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({length:100})
+  @Column({ length: 100 })
   name: string;
 
   @Column()
@@ -16,4 +17,15 @@ export class EventEntity {
 
   @Column()
   address: string;
+
+  @OneToMany(() => AttendeesEntity, (attendee) => attendee.event)
+  attendees: AttendeesEntity[];
+
+  attendeeCount?: number;
+
+  attendeeRejected?: number;
+
+  attendeeMaybe?: number;
+
+  attendeeAccepted?: number;
 }
