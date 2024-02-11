@@ -7,7 +7,7 @@ import { UserEntity } from './user.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
+export class LocalStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(LocalStrategy.name);
 
   constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>) {
